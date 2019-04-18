@@ -1,0 +1,29 @@
+{
+  "name": "expo-postpublish-rollbar",
+  "version": "0.5.1",
+  "description": "Upload sourcemaps to rollbar in your expo powered react native app.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jjabba/expo-postpublish-rollbar.git"
+  },
+  "keywords": [
+    "rollbar",
+    "react-native",
+    "sourcemaps"
+  ],
+  "author": "Karl Berggren",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jjabba/expo-postpublish-rollbar/issues"
+  },
+  "homepage": "https://github.com/jjabba/expo-postpublish-rollbar#readme",
+  "dependencies": {
+    "mkdirp": "^0.5.1",
+    "request": "^2.88.0",
+    "rimraf": "^2.6.3"
+  }
+}
