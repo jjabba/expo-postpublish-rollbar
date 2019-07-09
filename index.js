@@ -5,6 +5,7 @@ const mkdirp = require('mkdirp');
 const fs = require('fs');
 
 const ENDPOINT = 'https://api.rollbar.com/api/1/sourcemap';
+const URL_PLACEHOLDER = '{{url}}';
 
 function uploadSourceMap(token, version, minifiedUrl, { sourceMap, sourceFile }) {
   
@@ -39,6 +40,24 @@ function uploadSourceMap(token, version, minifiedUrl, { sourceMap, sourceFile })
   })
 }
 
+function renderUrlTemplate(minifiedUrl, template, log) {
+  if (!template) {
+    return minifiedUrl
+  }
+
+  if (typeof template !== 'string') {
+    log('Warning! Provided template is not a string!');
+    return minifiedUrl
+  }
+
+  if (template.indexOf(URL_PLACEHOLDER) === -1 ) {
+    log("Warning! Template is invalid. Make sure your 'minifiedUrlTemplate' config value cointains '" + URL_PLACEHOLDER + "'");
+    return minifiedUrl
+  }
+
+  return template.replace(URL_PLACEHOLDER, minifiedUrl)
+}
+
 module.exports = async options => {
   let {
     config,
@@ -63,13 +82,18 @@ module.exports = async options => {
     fs.writeFileSync(tmpdir + '/main.ios.map', iosSourceMap, 'utf-8');
     fs.writeFileSync(tmpdir + '/main.android.map', androidSourceMap, 'utf-8');
 
+    const template = config.minifiedUrlTemplate ? config.minifiedUrlTemplate : null;
+
     // ios
     const iosIdentifyer = ['ios', iosManifest.ios.bundleIdentifier, iosManifest.ios.buildNumber].join('-')
     const iosFiles = {
       sourceFile: tmpdir + '/main.ios.bundle',
       sourceMap: tmpdir + '/main.ios.map'
     }
-    const iosUpload = uploadSourceMap(config.serverItemAccessToken, iosIdentifyer, iosManifest.bundleUrl, iosFiles)
+
+    const iosMinifiedUrl = renderUrlTemplate(iosManifest.bundleUrl, template, log);
+
+    const iosUpload = uploadSourceMap(config.serverItemAccessToken, iosIdentifyer, iosMinifiedUrl, iosFiles)
     .then(function() { log('Successfully uploaded iOS sourcemap to rollbar (' + iosIdentifyer + ').')})
     .catch(function(e) { log('Failed to upload iOS sourcemap to rollbar (' + e.message + ')') })
 
@@ -80,11 +104,14 @@ module.exports = async options => {
     const androidFiles = {
       sourceFile: tmpdir + '/main.android.bundle',
       sourceMap: tmpdir + '/main.android.map'
-    } 
+    }
+
+    const androidMinifiedUrl = renderUrlTemplate(androidManifest.bundleUrl, template, log);
+
     const androidUpload = uploadSourceMap(
       config.serverItemAccessToken,
       androidIdentifyer,
-      androidManifest.bundleUrl,
+      androidMinifiedUrl,
       androidFiles
     )
     .then(function () { log('Successfully uploaded Android sourcemap to rollbar (' + androidIdentifyer + ').') })

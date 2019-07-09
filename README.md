@@ -6,7 +6,7 @@ It closely maps to how expo deals with delivering sourcemaps to their preferred 
 ## Installation
 
 1. `yarn add expo-postpublish-rollbar` in your project.
-3. Add the following to your `app.json` within the "expo" key.
+2. Add the following to your `app.json` within the "expo" key.
 
 ```javascript
   "hooks": {
@@ -14,13 +14,15 @@ It closely maps to how expo deals with delivering sourcemaps to their preferred 
       {
         "file": "expo-postpublish-rollbar",
         "config": {
-          "serverItemAccessToken": "YOUR_ROLLBAR_TOKEN"
+          "serverItemAccessToken": "YOUR_ROLLBAR_TOKEN",
+          "minifiedUrlTemplate": "http://reactnativehost/{{url}}"
         }
       }
     ]
   }
 ```
 
+3. Note that the minifiedUrlTemplate option is optional. If used, it allows you to customize the `minified_url` parameter passed to rollbar on upload.
 
 ## Reporting errors
 This project does not deal with the actual integraion of rollbar reporting. But in order for the sourcemaps to work effectively it's important that you use the same `version` string when reporting errors as the one generated and used by this postPublish upload hook:

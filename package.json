@@ -1,6 +1,6 @@
 {
   "name": "expo-postpublish-rollbar",
-  "version": "0.5.1",
+  "version": "0.6.0",
   "description": "Upload sourcemaps to rollbar in your expo powered react native app.",
   "main": "index.js",
   "scripts": {
